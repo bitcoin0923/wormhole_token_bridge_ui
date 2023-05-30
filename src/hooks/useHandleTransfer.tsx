@@ -68,7 +68,7 @@ import {
   ConnectedWallet as XplaConnectedWallet,
   useConnectedWallet as useXplaConnectedWallet,
 } from "@xpla/wallet-provider";
-import algosdk from "algosdk";
+import algosdk, { bigIntToBytes } from "algosdk";
 import { Types } from "aptos";
 import { Signer } from "ethers";
 import { parseUnits, zeroPad } from "ethers/lib/utils";
@@ -94,6 +94,7 @@ import {
   selectTransferSourceAsset,
   selectTransferSourceChain,
   selectTransferSourceParsedTokenAccount,
+  selectTransferTargetAsset,
   selectTransferTargetChain,
 } from "../store/selectors";
 import {
@@ -137,6 +138,8 @@ import { getSuiProvider } from "../utils/sui";
 import { postWithFees, waitForTerraExecution } from "../utils/terra";
 import { postWithFeesXpla, waitForXplaExecution } from "../utils/xpla";
 import useTransferTargetAddressHex from "./useTransferTargetAddress";
+
+
 
 type AdditionalPayloadOverride = {
   receivingContract: Uint8Array;
@@ -347,7 +350,7 @@ async function evm(
   recipientAddress: Uint8Array,
   isNative: boolean,
   chainId: ChainId,
-  senderAddress: Uint8Array,
+  payload: Uint8Array,
   relayerFee?: string
 ) {
   dispatch(setIsSending(true));
@@ -370,7 +373,7 @@ async function evm(
           recipientAddress,
           feeParsed,
           overrides,
-          senderAddress
+          payload
         )
       : await transferFromEth(
           getTokenBridgeAddressForChain(chainId),
@@ -381,7 +384,7 @@ async function evm(
           recipientAddress,
           feeParsed,
           overrides,
-          senderAddress
+          payload
         );
     dispatch(
       setTransferTx({ id: receipt.transactionHash, block: receipt.blockNumber })
@@ -891,6 +894,7 @@ async function sui(
 export function useHandleTransfer() {
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
+  const targetAsset = useSelector(selectTransferTargetAsset);
   const sourceChain = useSelector(selectTransferSourceChain);
   const sourceAsset = useSelector(selectTransferSourceAsset);
   const sourceAddress = useSelector(selectSourceWalletAddress);
@@ -898,6 +902,7 @@ export function useHandleTransfer() {
   const originAsset = useSelector(selectTransferOriginAsset);
   const amount = useSelector(selectTransferAmount);
   const targetChain = useSelector(selectTransferTargetChain);
+  
   const targetAddress = useTransferTargetAddressHex();
   const isTargetComplete = useSelector(selectTransferIsTargetComplete);
   const isSending = useSelector(selectTransferIsSending);
@@ -928,15 +933,23 @@ export function useHandleTransfer() {
   const disabled = !isTargetComplete || isSending || isSendComplete;
 
   const handleTransferClick = useCallback(() => {
-    // TODO: we should separate state for transaction vs fetching vaa
-    const enc = new TextEncoder();
-    const senderAddress = enc.encode(sourceAddress);
+    const targetAssetNumber = BigInt(parseInt(targetAsset?targetAsset:'0'));
+
+    // TODO: we should separate state for trans1action vs fetching vaa
+    const senderAddress = Uint8Array.from(Buffer.from(sourceAddress?sourceAddress:"", "hex"));
+    const targetAssetHex = bigIntToBytes(targetAssetNumber, 8);
+    const payload = new Uint8Array([
+      ...senderAddress,
+      ...targetAssetHex
+    ]);
+    const targetContractAddress = bigIntToBytes(BigInt(89737126), 32);
+
     if (
       isEVMChain(sourceChain) &&
       !!signer &&
       !!sourceAsset &&
       decimals !== undefined &&
-      !!targetAddress
+      !!targetContractAddress
     ) {
       evm(
         dispatch,
@@ -946,10 +959,10 @@ export function useHandleTransfer() {
         decimals,
         amount,
         targetChain,
-        targetAddress,
+        targetContractAddress,
         isNative,
         sourceChain,
-        senderAddress,
+        payload,
         relayerFee
       );
     } else if (

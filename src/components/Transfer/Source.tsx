@@ -18,6 +18,7 @@ import {
   incrementStep,
   setAmount,
   setSourceChain,
+  setStep,
   setTargetChain,
 } from "../../store/transferSlice";
 import { CHAINS, CLUSTER, getIsTransferDisabled } from "../../utils/consts";
@@ -108,7 +109,7 @@ function Source() {
     }
   }, [dispatch, uiAmountString]);
   const handleNextClick = useCallback(() => {
-    dispatch(incrementStep());
+    dispatch(setStep(2));
   }, [dispatch]);
 
   return (

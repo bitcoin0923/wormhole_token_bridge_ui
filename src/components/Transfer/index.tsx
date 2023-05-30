@@ -97,7 +97,7 @@ function Transfer() {
             {activeStep === 0 ? <Source /> : <SourcePreview />}
           </StepContent>
         </Step>
-        <Step
+        {/* <Step
           expanded={activeStep >= 1}
           disabled={preventNavigation || isRedeemComplete}
         >
@@ -110,11 +110,12 @@ function Transfer() {
           </StepButton>
           <StepContent>
             {activeStep === 1 ? <Target /> : <TargetPreview />}
+            <TargetPreview />
           </StepContent>
-        </Step>
+        </Step> */}
         <Step expanded={activeStep >= 2} disabled={isSendComplete}>
           <StepButton disabled icon={null}>
-            3. Send tokens
+            2. Send tokens
           </StepButton>
           <StepContent>
             {activeStep === 2 ? <Send /> : <SendPreview />}
@@ -126,7 +127,7 @@ function Transfer() {
             disabled={!isSendComplete || isRedeemComplete}
             icon={null}
           >
-            4. Redeem tokens
+            3. Redeem tokens
           </StepButton>
           <StepContent>
             {isRedeemComplete ? <RedeemPreview /> : <Redeem />}

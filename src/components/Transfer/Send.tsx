@@ -193,10 +193,8 @@ function Send() {
       ) : (
         <>
           <ButtonWithLoader
-            disabled={isDisabled}
             onClick={handleTransferClick}
             showLoader={showLoader && !isVAAPending}
-            error={errorMessage}
           >
             Transfer
           </ButtonWithLoader>
