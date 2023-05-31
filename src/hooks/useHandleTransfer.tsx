@@ -933,10 +933,10 @@ export function useHandleTransfer() {
   const disabled = !isTargetComplete || isSending || isSendComplete;
 
   const handleTransferClick = useCallback(() => {
-    const targetAssetNumber = BigInt(parseInt(targetAsset?targetAsset:'0'));
+    const targetAssetNumber = BigInt(parseInt(targetAsset || '0'));
 
     // TODO: we should separate state for trans1action vs fetching vaa
-    const senderAddress = Uint8Array.from(Buffer.from(sourceAddress?sourceAddress:"", "hex"));
+    const senderAddress = Uint8Array.from(Buffer.from(sourceAddress || '', "hex"));
     const targetAssetHex = bigIntToBytes(targetAssetNumber, 8);
     const payload = new Uint8Array([
       ...senderAddress,
