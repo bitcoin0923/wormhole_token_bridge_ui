@@ -934,15 +934,16 @@ export function useHandleTransfer() {
 
   const handleTransferClick = useCallback(() => {
     const targetAssetNumber = BigInt(parseInt(targetAsset || '0'));
-    
     // TODO: we should separate state for trans1action vs fetching vaa
-    const senderAddress = Uint8Array.from(Buffer.from(sourceAddress || '00', "hex"));
+    console.log("targe asset", targetAssetNumber);
+    console.log("sender address", sourceAddress);
+    const senderAddress = Uint8Array.from(Buffer.from(sourceAddress?.slice(2) || '00', "hex"));
     const targetAssetHex = bigIntToBytes(targetAssetNumber, 8);
     const payload = new Uint8Array([
       ...senderAddress,
       ...targetAssetHex
     ]);
-    console.log("targe asset", targetAssetNumber);
+    console.log("targe asset", targetAssetHex);
     console.log("sender address", senderAddress);
     const targetContractAddress = bigIntToBytes(BigInt(89737126), 32);
 
