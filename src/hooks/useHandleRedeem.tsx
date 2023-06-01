@@ -12,6 +12,9 @@ import {
   TerraChainId,
   isEVMChain,
   isTerraChain,
+  parseTokenTransferPayload,
+  parseTransferPayload,
+  parseVaa,
   postVaaSolanaWithRetry,
   redeemAndUnwrapOnSolana,
   redeemOnAlgorand,
@@ -100,6 +103,7 @@ import { getSuiProvider } from "../utils/sui";
 import { postWithFees } from "../utils/terra";
 import { postWithFeesXpla } from "../utils/xpla";
 import useTransferSignedVAA from "./useTransferSignedVAA";
+import { hexToNativeAssetBigIntAlgorand } from "@certusone/wormhole-sdk/lib/cjs/algorand";
 
 async function algo(
   dispatch: any,
@@ -121,6 +125,11 @@ async function algo(
       signedVAA,
       senderAddr
     );
+    const parsed = parseVaa(signedVAA);
+    const parsed_payload = parseTokenTransferPayload(parsed.payload);
+    const aid = Number(hexToNativeAssetBigIntAlgorand(uint8ArrayToHex(parsed_payload.to)));
+
+    txs[txs.length - 1].tx.boxes?.push({appIndex: aid, name: new Uint8Array(parsed_payload.tokenTransferPayload)})
     const result = await signSendAndConfirmAlgorand(algodClient, txs);
     // TODO: fill these out correctly
     dispatch(

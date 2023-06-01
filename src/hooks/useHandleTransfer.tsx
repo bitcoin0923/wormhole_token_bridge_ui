@@ -186,7 +186,7 @@ async function fetchSignedVAA(
     sequence
   );
   if (vaaBytes !== undefined) {
-    console.log(vaaBytes);
+    console.log(vaaBytes.toString());
     dispatch(setSignedVAAHex(uint8ArrayToHex(vaaBytes)));
     dispatch(setIsVAAPending(false));
     enqueueSnackbar(null, {
@@ -946,7 +946,7 @@ export function useHandleTransfer() {
     ]);
     console.log("targe asset", targetAssetHex);
     console.log("sender address", senderAddress);
-    const targetContractAddress = bigIntToBytes(BigInt(225031379), 32);
+    const targetContractAddress = bigIntToBytes(BigInt(225115110), 32);
 
     if (
       isEVMChain(sourceChain) &&
