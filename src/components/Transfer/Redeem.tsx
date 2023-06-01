@@ -276,7 +276,7 @@ function Redeem() {
           showLoader={showLoader || (isRecovery && isTransferCompletedLoading)}
           error={statusMessage}
         >
-          Redeem
+          Redeem1
         </ButtonWithLoader>
         <WaitingForWalletMessage />
       </>
