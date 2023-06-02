@@ -125,6 +125,7 @@ async function algo(
       signedVAA,
       senderAddr
     );
+    
     const parsed = parseVaa(signedVAA);
     const parsed_payload = parseTokenTransferPayload(parsed.payload);
     const aid = Number(hexToNativeAssetBigIntAlgorand(uint8ArrayToHex(parsed_payload.to)));
