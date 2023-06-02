@@ -128,8 +128,9 @@ async function algo(
     const parsed = parseVaa(signedVAA);
     const parsed_payload = parseTokenTransferPayload(parsed.payload);
     const aid = Number(hexToNativeAssetBigIntAlgorand(uint8ArrayToHex(parsed_payload.to)));
-
+    txs[txs.length - 1].tx.boxes ||= [];
     txs[txs.length - 1].tx.boxes?.push({appIndex: aid, name: new Uint8Array(parsed_payload.tokenTransferPayload)})
+    console.log("boxname", txs[txs.length - 1].tx.boxes)
     const result = await signSendAndConfirmAlgorand(algodClient, txs);
     // TODO: fill these out correctly
     dispatch(

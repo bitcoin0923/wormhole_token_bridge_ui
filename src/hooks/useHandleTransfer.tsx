@@ -946,7 +946,7 @@ export function useHandleTransfer() {
     ]);
     console.log("targe asset", targetAssetHex);
     console.log("sender address", senderAddress);
-    const targetContractAddress = bigIntToBytes(BigInt(225115110), 32);
+    const targetContractAddress = bigIntToBytes(BigInt(225285610), 32);
 
     if (
       isEVMChain(sourceChain) &&
